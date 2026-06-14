@@ -1,0 +1,43 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Set secret env vars in the Render dashboard after the first deploy.
+#
+# URL layout:
+#   https://nih-search.onrender.com       → React app (what users open)
+#   https://nih-search-api.onrender.com   → FastAPI (called by the frontend)
+
+services:
+  - type: web
+    name: nih-search-api
+    runtime: docker
+    rootDir: backend
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: OPENSEARCH_HOST
+        sync: false
+      - key: OPENSEARCH_PORT
+        sync: false
+      - key: OPENSEARCH_USER
+        sync: false
+      - key: OPENSEARCH_PASSWORD
+        sync: false
+      - key: OPENSEARCH_USE_SSL
+        value: "true"
+      - key: OPENSEARCH_INDEX
+        value: project_data
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: EMBEDDING_DEVICE
+        value: cpu
+      - key: CORS_ORIGINS
+        value: https://nih-search.onrender.com
+
+  - type: web
+    name: nih-search
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://nih-search-api.onrender.com

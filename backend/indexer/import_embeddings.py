@@ -35,13 +35,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from opensearchpy.helpers import parallel_bulk  # noqa: E402
 
-from api.opensearch_client import get_client, get_index_name  # noqa: E402
-from index_data import (  # noqa: E402
-  BULK_CHUNK_SIZE,
-  BULK_QUEUE_SIZE,
-  BULK_THREAD_COUNT,
-  create_index,
-)
+from api.opensearch_client import get_bulk_settings, get_client, get_index_name, get_timeout  # noqa: E402
+from index_data import create_index  # noqa: E402
 
 ID_FIELD = "APPLICATION_ID"
 EMBEDDING_FIELD = "embedding"
@@ -68,19 +63,31 @@ def _iter_ndjson(path: Path) -> Iterator[dict[str, Any]]:
         print(f"  Warning: skipping line {line_no} in {path}: {exc}", flush=True)
 
 
+def _format_bulk_failure(item: object) -> str:
+  if not isinstance(item, dict):
+    return str(item)[:300]
+  block = item.get("index")
+  if not isinstance(block, dict):
+    return str(item)[:300]
+  doc_id = block.get("_id", "?")
+  err = block.get("error", "unknown")
+  return f"id={doc_id} error={err}"
+
+
 def import_file(client: object, index_name: str, ndjson_path: Path) -> tuple[int, int]:
   """Bulk-index one NDJSON file; return (successes, failures)."""
   successes = 0
   failures = 0
+  chunk_size, thread_count, queue_size = get_bulk_settings()
 
   records = _iter_ndjson(ndjson_path)
 
   for ok, item in parallel_bulk(
     client,  # type: ignore[arg-type]
     _actions(index_name, records),
-    thread_count=BULK_THREAD_COUNT,
-    chunk_size=BULK_CHUNK_SIZE,
-    queue_size=BULK_QUEUE_SIZE,
+    thread_count=thread_count,
+    chunk_size=chunk_size,
+    queue_size=queue_size,
     raise_on_error=False,
     raise_on_exception=False,
   ):
@@ -91,7 +98,9 @@ def import_file(client: object, index_name: str, ndjson_path: Path) -> tuple[int
     else:
       failures += 1
       if failures <= 5:
-        print(f"  bulk error: {item}", flush=True)
+        print(f"  bulk error: {_format_bulk_failure(item)}", flush=True)
+      elif failures == 6:
+        print("  bulk errors continue (further details suppressed)", flush=True)
 
   return successes, failures
 
@@ -109,6 +118,12 @@ def main() -> None:
 
   client = get_client(http_compress=True)
   index_name = get_index_name()
+  chunk_size, thread_count, queue_size = get_bulk_settings()
+  print(
+    f"Bulk settings: chunk_size={chunk_size}, threads={thread_count}, "
+    f"queue={queue_size}, timeout={get_timeout()}s",
+    flush=True,
+  )
 
   # Ensure the index exists with the knn_vector mapping.
   # If it already exists this is a no-op (create_index checks before creating).

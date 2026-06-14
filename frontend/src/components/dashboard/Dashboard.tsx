@@ -285,12 +285,16 @@ interface KpiCardProps {
 function KpiCard({ label, value, onClick }: KpiCardProps) {
   const content = (
     <>
-      <div className="text-accent text-[1.45rem] font-bold leading-[1.2] font-mono">{value}</div>
-      <div className="text-text-secondary text-[0.8125rem] mt-[0.375rem]">{label}</div>
+      <div className="text-accent text-[0.95rem] min-[901px]:text-[1.45rem] font-bold leading-[1.2] font-mono truncate">
+        {value}
+      </div>
+      <div className="text-text-secondary text-[0.625rem] min-[901px]:text-[0.8125rem] mt-1 min-[901px]:mt-[0.375rem] leading-tight">
+        {label}
+      </div>
     </>
   );
   const className = cn(
-    "bg-surface border border-border rounded-lg px-4 py-[0.9rem] text-center w-full",
+    "bg-surface border border-border rounded-lg px-2 py-2 min-[901px]:px-4 min-[901px]:py-[0.9rem] text-center w-full min-w-0",
     onClick
       && "cursor-pointer transition-[border-color,background,box-shadow] duration-150 hover:border-accent hover:bg-surface-hover hover:shadow-sm focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
   );
@@ -753,7 +757,7 @@ export default function Dashboard({
   return (
     <div
       className={cn(
-        "flex w-full flex-col px-6 py-[1.1rem]",
+        "flex w-full flex-col px-6 py-[1.1rem] max-[900px]:px-3 max-[900px]:py-3",
         refreshing && "opacity-[0.72] transition-opacity duration-200",
       )}
     >
@@ -797,7 +801,7 @@ export default function Dashboard({
       />
 
       {/* KPI cards */}
-      <div className="mt-0 mb-3 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[500px]:grid-cols-1">
+      <div className="mt-0 mb-3 grid grid-cols-3 gap-2 min-[901px]:gap-3">
         <KpiCard label="Total Funding" value={formatDollarsCompact(summary.total_funding)} />
         <KpiCard
           label="Total Projects"

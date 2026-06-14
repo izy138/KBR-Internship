@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cloneElement, isValidElement, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   normalizeStateFacetKey,
   useCascadingFilterAvailability,
@@ -36,6 +36,10 @@ const FILTER_FIELD_WIDTH = {
 const MOBILE_FILTER_FIELD_WIDTH = "box-border w-full min-w-0 p-0.50";
 const MOBILE_FILTERS_GRID_CLASS =
   "grid w-full grid-cols-2 grid-rows-3 gap-2 [&>*]:min-w-0";
+
+function duplicateHelpTooltip(node: ReactNode): ReactNode {
+  return isValidElement(node) ? cloneElement(node) : node;
+}
 
 export type { FilterValues } from "../../types/filters";
 
@@ -391,13 +395,20 @@ function Filters({
         initialQuery={searchQuery ?? ""}
         submitOnClear={searchSubmitOnClear}
         toolbarEnd={mobileFiltersButton}
+        toolbarTrailing={
+          helpTooltip ? (
+            <span className="min-[901px]:hidden shrink-0">{duplicateHelpTooltip(helpTooltip)}</span>
+          ) : null
+        }
       />
     ) : null;
 
   return (
     <section className="relative -mt-1 flex flex-col items-stretch gap-[0.4rem] overflow-x-auto rounded-lg border border-border bg-surface px-3 pt-2.5 pb-3 max-[900px]:overflow-visible min-[1101px]:overflow-x-visible">
       {helpTooltip ? (
-        <div className="absolute top-2.5 right-3 z-10">{helpTooltip}</div>
+        <div className="absolute top-2.5 right-3 z-10 max-[900px]:hidden">
+          {duplicateHelpTooltip(helpTooltip)}
+        </div>
       ) : null}
       {searchContent ? (
         <div className="relative min-w-0 w-full pt-0.5 pb-1">

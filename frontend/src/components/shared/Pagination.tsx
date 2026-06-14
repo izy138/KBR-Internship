@@ -127,7 +127,7 @@ export default function Pagination({
       </button>
 
       {hasJumpToPage && (
-        <form className="inline-flex items-center gap-1 ml-8" onSubmit={onJumpToPageSubmit}>
+        <form className="inline-flex items-center gap-1 ml-0 min-[901px]:ml-8 max-[900px]:w-full max-[900px]:mt-1" onSubmit={onJumpToPageSubmit}>
           <input
             className="w-14 h-[34px] border border-border rounded-sm bg-surface text-text-primary font-sans text-[13px] text-center px-[0.35rem] focus:outline-2 focus:outline-accent/40 focus:outline-offset-1 focus:border-accent"
             type="text"

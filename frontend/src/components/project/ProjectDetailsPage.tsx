@@ -536,8 +536,8 @@ export default function ProjectDetailsPage({
   return (
     <div className="grid grid-cols-[2fr_1fr] gap-[1.25rem] items-start w-full max-[960px]:grid-cols-1">
     <div className="flex flex-col gap-[1.25rem] min-w-0 w-full">
-    <div className="bg-surface border border-border rounded-lg p-6 w-full min-w-0">
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-3 mb-4">
+    <div className="bg-surface border border-border rounded-lg p-4 min-[901px]:p-6 w-full min-w-0">
+      <div className="grid grid-cols-1 min-[901px]:grid-cols-[auto_1fr_auto] items-start min-[901px]:items-center gap-x-4 gap-y-3 mb-4">
         <BackToResultsButton onClick={onBack} />
         {displayProjectYears.length > 1 ? (
           <div className="flex flex-wrap justify-center items-center gap-[0.4rem] min-w-0" aria-label="Fiscal years for this project">

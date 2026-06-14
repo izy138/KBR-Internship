@@ -33,7 +33,11 @@ export const RECHARTS_TOOLTIP_WRAPPER_STYLE = {
   padding: 0,
   margin: 0,
   boxShadow: "none",
+  maxWidth: "calc(100vw - 1.5rem)",
 } as const;
+
+/** Keep Recharts cursor tooltips inside the chart area instead of overflowing the page. */
+export const RECHARTS_TOOLTIP_ESCAPE_VIEWBOX = { x: false, y: false } as const;
 
 /** Dashboard panel shell — single top inset for all chart/map cards. */
 export const CLS_DASHBOARD_PANEL_SHELL =

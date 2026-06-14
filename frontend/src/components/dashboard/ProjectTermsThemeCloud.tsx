@@ -547,13 +547,25 @@ export default function ProjectTermsThemeCloud({ payload, onSearch }: Props): Re
   const [selectedTerms, setSelectedTerms] = useState<Set<string>>(new Set());
   const [showMaxWarning, setShowMaxWarning] = useState(false);
   const listRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const flyoutRef = useRef<HTMLButtonElement>(null);
   const needsFlyToHubRef = useRef(false);
   const pendingAutoSelectCatIdRef = useRef<string | null>(null);
   const autoSelectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const keywordsRevealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [listWidthPx, setListWidthPx] = useState(216);
+  const [isMobileLayout, setIsMobileLayout] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 900px)").matches,
+  );
   const buckets = (payload.buckets ?? []).filter((b) => b.label !== "Low confidence");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const syncLayout = (): void => setIsMobileLayout(mq.matches);
+    syncLayout();
+    mq.addEventListener("change", syncLayout);
+    return () => mq.removeEventListener("change", syncLayout);
+  }, []);
 
   const catFontSize = CAT_FONT_PX;
   const catBox = uniformCatNodeBox(rawTree, catFontSize);
@@ -632,14 +644,27 @@ export default function ProjectTermsThemeCloud({ payload, onSearch }: Props): Re
     () => expansionContentWidthPx(listWidthPx > 0 ? listWidthPx : 216),
     [listWidthPx],
   );
-  const clusterGridTemplate = `13.5rem ${expansionSlotWidthPx}px ${TERMS_PANEL_WIDTH}`;
   const selectedSub =
     activeCatNode?.cat.children?.find((sub) => sub.id === selectedSubId) ?? null;
+  const expansionOpen = flyoutId !== null;
+  const panelOpen = selectedSub !== null && keywordsRevealed;
+  const clusterGridTemplate = useMemo(() => {
+    if (!isMobileLayout) {
+      return `13.5rem ${expansionSlotWidthPx}px ${TERMS_PANEL_WIDTH}`;
+    }
+    const expansionCol = expansionOpen ? `${expansionSlotWidthPx}px` : "0px";
+    const termsCol = panelOpen ? TERMS_PANEL_WIDTH : "0px";
+    return `13.5rem ${expansionCol} ${termsCol}`;
+  }, [isMobileLayout, expansionOpen, expansionSlotWidthPx, panelOpen]);
   const leafTerms: TermNode[] = selectedSub?.children ?? [];
   const selectedCount = selectedTerms.size;
-  const panelOpen = selectedSub !== null && keywordsRevealed;
-  const expansionOpen = flyoutId !== null;
   const showSubs = subsMounted && activeId !== null;
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el || !isMobileLayout) return;
+    el.scrollLeft = 0;
+  }, [isMobileLayout, expansionOpen, panelOpen, flyoutId]);
 
   useEffect(() => {
     return () => clearAutoSelectTimers();
@@ -803,9 +828,15 @@ export default function ProjectTermsThemeCloud({ payload, onSearch }: Props): Re
             "No theme data yet. Run: docker compose exec backend python indexer/build_project_term_theme_counts.py"}
         </p>
       ) : (
-        <div className="flex w-full min-h-[24rem] lg:min-h-[28rem] justify-center overflow-x-auto overflow-y-hidden ">
+        <div
+          ref={scrollContainerRef}
+          className="flex w-full min-h-[24rem] lg:min-h-[28rem] min-[901px]:justify-center min-[901px]:overflow-visible max-[900px]:justify-start max-[900px]:overflow-x-auto max-[900px]:overflow-y-hidden max-[900px]:overscroll-x-contain max-[900px]:touch-pan-x max-[900px]:[-webkit-overflow-scrolling:touch]"
+        >
           <div
-            className="grid shrink-0 items-start gap-3"
+            className={cn(
+              "grid shrink-0 items-start gap-3",
+              isMobileLayout && !expansionOpen && !panelOpen && "gap-0",
+            )}
             style={{
               gridTemplateColumns: clusterGridTemplate,
               minHeight: listHeightPx,

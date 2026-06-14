@@ -40,7 +40,7 @@ function FiscalYearMeta({ project }: { project: TopFundedProject }) {
       {showTooltip ? (
         <span
           role="tooltip"
-          className="pointer-events-none absolute bottom-[calc(100%+0.25rem)] right-0 z-30 hidden min-w-[8.5rem] max-w-[13rem] rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] leading-snug text-text-secondary shadow-md group-hover/fy:block group-focus-within/fy:block"
+          className="pointer-events-none absolute bottom-[calc(100%+0.25rem)] left-1/2 z-30 hidden min-w-[8.5rem] max-w-[min(13rem,calc(100vw-2rem))] -translate-x-1/2 rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] leading-snug text-text-secondary shadow-md group-hover/fy:block group-focus-within/fy:block"
         >
           {tooltipLines.map((line) => (
             <span key={line} className="block">
@@ -179,12 +179,12 @@ export default function TopFundedProjectsPanel({
     >
       <div className={CLS_DASHBOARD_PANEL_HEADER}>Top Funded Projects</div>
       <div
-        className="grid grid-cols-3 grid-rows-5 gap-2 min-h-0"
+        className="grid grid-cols-3 grid-rows-5 gap-2 min-h-0 max-[900px]:grid-cols-2 max-[900px]:grid-rows-none max-[500px]:grid-cols-1"
         role="list"
         aria-label="Top funded projects"
       >
         {projects.length === 0 && !loading ? (
-          <p className="col-span-3 row-span-5 flex items-center justify-center text-sm text-text-muted text-center">
+          <p className="col-span-full flex items-center justify-center text-sm text-text-muted text-center py-8">
             No projects match the current filters.
           </p>
         ) : (

@@ -1,4 +1,4 @@
-import { type MouseEvent, useCallback, useState } from "react";
+import { type MouseEvent, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { scaleThreshold } from "d3-scale";
 import {
   ComposableMap,
@@ -10,6 +10,7 @@ import type { StateDataPoint } from "../../api";
 import { formatDollarsCompact } from "../../utils/format";
 import { cn } from "../../utils/cn";
 import { CHART_TOOLTIP_ROUNDED_STYLE, CLS_CHART_CURSOR_TOOLTIP, CLS_DASHBOARD_PANEL_HEADER, CLS_DASHBOARD_PANEL_SHELL } from "../../utils/chartStyles";
+import { clampTooltipToContainer } from "../../utils/tooltipPosition";
 
 /** TopoJSON source — US states at 1:10m resolution */
 const GEO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -119,6 +120,8 @@ interface TooltipState {
   totalFunding: number;
 }
 
+type PointerPosition = { x: number; y: number };
+
 interface StateMapProps {
   data: StateDataPoint[];
   /** Active state filter (USPS abbrev); highlights matching state on the map. */
@@ -137,7 +140,11 @@ export default function StateMap({
   onStateSelect,
 }: StateMapProps) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [pointerPos, setPointerPos] = useState<PointerPosition | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<PointerPosition | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
+  const mapCanvasRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const normalizedSelectedAbbrev = selectedStateAbbrev.trim().toUpperCase();
 
@@ -154,7 +161,35 @@ export default function StateMap({
   const clearHover = useCallback((): void => {
     setHoveredState(null);
     setTooltip(null);
+    setPointerPos(null);
+    setTooltipPos(null);
   }, []);
+
+  const updatePointerFromEvent = useCallback((event: MouseEvent<SVGPathElement>): void => {
+    const canvas = mapCanvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    setPointerPos({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!tooltip || !pointerPos || !mapCanvasRef.current || !tooltipRef.current) {
+      setTooltipPos(null);
+      return;
+    }
+
+    const canvas = mapCanvasRef.current;
+    const tip = tooltipRef.current;
+    const clamped = clampTooltipToContainer(
+      pointerPos,
+      { width: tip.offsetWidth, height: tip.offsetHeight },
+      { width: canvas.clientWidth, height: canvas.clientHeight },
+    );
+    setTooltipPos(clamped);
+  }, [tooltip, pointerPos]);
 
   const isPointerStillOverMap = (
     event: MouseEvent<SVGPathElement>,
@@ -261,14 +296,16 @@ export default function StateMap({
           e.preventDefault();
           handleStateClick(geoName);
         }}
-        onMouseEnter={() => {
+        onMouseEnter={(event) => {
           setHoveredState(geoName);
           setTooltip({
             stateName: geoName,
             count: point?.count ?? 0,
             totalFunding: point?.total_funding ?? 0,
           });
+          updatePointerFromEvent(event);
         }}
+        onMouseMove={updatePointerFromEvent}
         onMouseLeave={(e) => {
           if (isPointerStillOverMap(e)) return;
           clearHover();
@@ -331,17 +368,21 @@ export default function StateMap({
     <div className={cn(CLS_DASHBOARD_PANEL_SHELL, "pb-[0.9rem] relative flex h-full min-h-0 w-full flex-1 flex-col")}>
       <div className={CLS_DASHBOARD_PANEL_HEADER}>Projects by State</div>
       <div
-        className="-mt-[0.2rem] relative min-h-0 flex-1"
+        ref={mapCanvasRef}
+        className="-mt-[0.2rem] relative min-h-0 flex-1 overflow-visible"
         data-map-canvas
         onMouseLeave={clearHover}
       >
-        {tooltip != null ? (
+        {tooltip != null && pointerPos != null ? (
           <div
-            className={cn(
-              CLS_CHART_CURSOR_TOOLTIP,
-              "pointer-events-none absolute left-88 top-[-30px] z-10 -translate-x-1/2",
-            )}
-            style={CHART_TOOLTIP_ROUNDED_STYLE}
+            ref={tooltipRef}
+            className={cn(CLS_CHART_CURSOR_TOOLTIP, "pointer-events-none absolute z-10")}
+            style={{
+              ...CHART_TOOLTIP_ROUNDED_STYLE,
+              left: tooltipPos?.x ?? pointerPos.x,
+              top: tooltipPos?.y ?? pointerPos.y,
+              visibility: tooltipPos ? "visible" : "hidden",
+            }}
           >
             <div className="text-text-primary font-semibold mb-1 text-[0.82rem]">{tooltip.stateName}</div>
             <div className="text-text-secondary">Projects: {tooltip.count.toLocaleString()}</div>

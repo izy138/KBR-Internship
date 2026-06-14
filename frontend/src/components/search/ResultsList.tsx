@@ -316,6 +316,157 @@ const SkeletonRow: FC<{
   </div>
 );
 
+// ─── Mobile Card ──────────────────────────────────────────────────────────────
+
+interface MobileResultCardProps {
+  item: SearchResultRecord;
+  showSimilarityScore: boolean;
+  onOpenDetails?: (item: SearchResultRecord) => void;
+  onOpenInvestigator?: (name: string) => void;
+  onOpenOrganization?: (name: string) => void;
+  onOpenInstitution?: (name: string) => void;
+}
+
+const MobileResultCard: FC<MobileResultCardProps> = ({
+  item,
+  showSimilarityScore,
+  onOpenDetails,
+  onOpenInvestigator,
+  onOpenOrganization,
+  onOpenInstitution,
+}) => {
+  const title =
+    item.PROJECT_TITLE ?? item.title ?? item.project_title ?? "Untitled Project";
+  const totalCost = item.TOTAL_COST;
+  const orderedPiNames = getOrderedPiNames(item.PI_NAMEs);
+  const orgName = item.ORG_NAME ?? "—";
+  const icName = item.IC_NAME ?? "—";
+  const state = item.ORG_STATE ?? "—";
+  const activity = item.ACTIVITY ?? "—";
+  const fy = item.FY != null ? String(item.FY) : "—";
+  const costDisplay =
+    totalCost != null && !Number.isNaN(totalCost) ? formatDollarsCompact(totalCost) : "—";
+
+  const handleActivate = useCallback(() => {
+    onOpenDetails?.(item);
+  }, [item, onOpenDetails]);
+
+  return (
+    <div
+      className="group bg-surface px-3 py-3 cursor-pointer transition-[background] duration-100 border-b border-border last:border-b-0 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-[-2px]"
+      role="row"
+      tabIndex={0}
+      onClick={handleActivate}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleActivate();
+        }
+      }}
+      aria-label={`Project: ${title}`}
+    >
+      <h3 className="text-[14px] font-semibold text-text-primary leading-[1.4] line-clamp-2 mb-1.5 group-hover:text-accent-hover">
+        {title}
+      </h3>
+
+      {showSimilarityScore ? (
+        <div className="mb-1.5 font-mono text-[11px] tabular-nums text-text-muted">
+          Similarity: {formatSimilarityScore(item._score)}
+        </div>
+      ) : null}
+
+      <div className="flex flex-nowrap items-center gap-x-2 overflow-x-auto text-[11px] text-text-secondary leading-[1.35] min-w-0">
+        <div className="inline-flex min-w-0 max-w-full items-center gap-1">
+          <span className="shrink-0 text-text-muted text-[9px] uppercase tracking-wide font-semibold">
+            PI
+          </span>
+          <span className="min-w-0 truncate">
+            {orderedPiNames.length > 0 ? (
+              onOpenInvestigator ? (
+                orderedPiNames.map((name, index) => (
+                  <Fragment key={name}>
+                    <button
+                      type="button"
+                      className={CLS_CELL_LINK_BTN}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onOpenInvestigator(name);
+                      }}
+                      onKeyDown={(event) => {
+                        event.stopPropagation();
+                      }}
+                    >
+                      {name}
+                    </button>
+                    {index < orderedPiNames.length - 1 ? "; " : ""}
+                  </Fragment>
+                ))
+              ) : (
+                orderedPiNames.join("; ")
+              )
+            ) : (
+              "—"
+            )}
+          </span>
+        </div>
+        <span className="shrink-0 text-border-strong" aria-hidden>
+          ·
+        </span>
+        <div className="inline-flex min-w-0 max-w-[38%] items-center gap-1">
+          <span className="shrink-0 text-text-muted text-[9px] uppercase tracking-wide font-semibold">
+            Org
+          </span>
+          <LinkableCellValue value={orgName} onActivate={onOpenOrganization} />
+        </div>
+        <span className="shrink-0 text-border-strong" aria-hidden>
+          ·
+        </span>
+        <div className="inline-flex min-w-0 max-w-[38%] items-center gap-1">
+          <span className="shrink-0 text-text-muted text-[9px] uppercase tracking-wide font-semibold">
+            Inst
+          </span>
+          <LinkableCellValue value={icName} onActivate={onOpenInstitution} />
+        </div>
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        {state !== "—" ? (
+          <span className="text-[11px] text-text-secondary">{state}</span>
+        ) : null}
+        {activity !== "—" ? (
+          <span className="inline-block bg-accent-light text-accent-text rounded-full px-[0.42rem] py-[0.12rem] text-[10px] font-medium">
+            {activity}
+          </span>
+        ) : null}
+        {fy !== "—" ? (
+          <span className="inline-block bg-green-light text-green rounded-full px-[0.42rem] py-[0.12rem] text-[10px] font-medium">
+            {fy}
+          </span>
+        ) : null}
+        <span className="ml-auto font-medium text-[12px] text-text-primary shrink-0">
+          {costDisplay}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+const MobileSkeletonCard: FC = () => (
+  <div
+    className="bg-surface px-3 py-3 border-b border-border last:border-b-0 pointer-events-none"
+    aria-hidden="true"
+  >
+    <div className="skeleton-line mb-2" style={{ width: "85%" }} />
+    <div className="skeleton-line mb-1.5" style={{ width: "60%" }} />
+    <div className="skeleton-line mb-1.5" style={{ width: "70%" }} />
+    <div className="flex gap-2 mt-2">
+      <div className="skeleton-line" style={{ width: "18%" }} />
+      <div className="skeleton-line" style={{ width: "22%" }} />
+      <div className="skeleton-line ml-auto" style={{ width: "25%" }} />
+    </div>
+  </div>
+);
+
 // ─── Result Row ───────────────────────────────────────────────────────────────
 
 interface ResultRowProps {
@@ -528,19 +679,35 @@ const ResultsList: FC<ResultsListProps> = ({
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-px bg-border border border-border rounded-lg overflow-hidden" role="table" aria-label="Search results loading" aria-busy="true">
-        <ResultsHeader
-          columns={displayColumns}
-          colsGridClass={colsGridClass}
-          sort={sort}
-          onSort={handleSort}
-        />
-        <div role="rowgroup">
+      <>
+        <div
+          className="hidden min-[901px]:flex flex-col gap-px bg-border border border-border rounded-lg overflow-hidden"
+          role="table"
+          aria-label="Search results loading"
+          aria-busy="true"
+        >
+          <ResultsHeader
+            columns={displayColumns}
+            colsGridClass={colsGridClass}
+            sort={sort}
+            onSort={handleSort}
+          />
+          <div role="rowgroup">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonRow key={i} columns={displayColumns} colsGridClass={colsGridClass} />
+            ))}
+          </div>
+        </div>
+        <div
+          className="flex min-[901px]:hidden flex-col bg-border border border-border rounded-lg overflow-hidden"
+          aria-label="Search results loading"
+          aria-busy="true"
+        >
           {Array.from({ length: 5 }).map((_, i) => (
-            <SkeletonRow key={i} columns={displayColumns} colsGridClass={colsGridClass} />
+            <MobileSkeletonCard key={i} />
           ))}
         </div>
-      </div>
+      </>
     );
   }
 
@@ -568,25 +735,44 @@ const ResultsList: FC<ResultsListProps> = ({
   }
 
   return (
-    <div
-      className="flex flex-col gap-px bg-border border border-border rounded-lg overflow-hidden"
-      role="table"
-      aria-label="Search results"
-      aria-rowcount={results.length}
-    >
-      <ResultsHeader
-        columns={displayColumns}
-        colsGridClass={colsGridClass}
-        sort={sort}
-        onSort={handleSort}
-      />
-      <div role="rowgroup">
+    <>
+      <div
+        className="hidden min-[901px]:flex flex-col gap-px bg-border border border-border rounded-lg overflow-hidden"
+        role="table"
+        aria-label="Search results"
+        aria-rowcount={results.length}
+      >
+        <ResultsHeader
+          columns={displayColumns}
+          colsGridClass={colsGridClass}
+          sort={sort}
+          onSort={handleSort}
+        />
+        <div role="rowgroup">
+          {sortedResults.map((item, index) => (
+            <ResultRow
+              key={item._id ?? String(index)}
+              columns={displayColumns}
+              colsGridClass={colsGridClass}
+              item={item}
+              onOpenDetails={onOpenDetails}
+              onOpenInvestigator={onOpenInvestigator}
+              onOpenOrganization={onOpenOrganization}
+              onOpenInstitution={onOpenInstitution}
+            />
+          ))}
+        </div>
+      </div>
+      <div
+        className="flex min-[901px]:hidden flex-col bg-border border border-border rounded-lg overflow-hidden"
+        role="list"
+        aria-label="Search results"
+      >
         {sortedResults.map((item, index) => (
-          <ResultRow
+          <MobileResultCard
             key={item._id ?? String(index)}
-            columns={displayColumns}
-            colsGridClass={colsGridClass}
             item={item}
+            showSimilarityScore={showSimilarityScore}
             onOpenDetails={onOpenDetails}
             onOpenInvestigator={onOpenInvestigator}
             onOpenOrganization={onOpenOrganization}
@@ -594,7 +780,7 @@ const ResultsList: FC<ResultsListProps> = ({
           />
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

@@ -154,12 +154,13 @@ export default function HelpTooltip({
       const pad = VIEWPORT_PAD;
       const maxWidth = Math.min(PANEL_MAX_WIDTH_PX, vw - pad * 2);
       const maxHeight = vh - pad * 2;
+      const effectivePlacement = vw <= 900 ? "below" : placement;
 
       panelEl.style.width = `${maxWidth}px`;
       panelEl.style.maxHeight = `${maxHeight}px`;
 
       const { width: panelWidth, height: panelHeight } = panelEl.getBoundingClientRect();
-      setPanelCoords(clampPanelPosition(anchor, panelWidth, panelHeight, placement));
+      setPanelCoords(clampPanelPosition(anchor, panelWidth, panelHeight, effectivePlacement));
     };
 
     updatePosition();

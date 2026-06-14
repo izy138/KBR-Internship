@@ -129,7 +129,7 @@ export default function SemanticVectorLabPage(): JSX.Element {
             value={hybridQ}
             onChange={(e) => setHybridQ(e.target.value)}
           />
-          <div className="grid grid-cols-[140px_1fr] gap-[0.45rem_0.75rem] items-center mb-[0.35rem]">
+          <div className="grid grid-cols-1 gap-2 min-[901px]:grid-cols-[140px_1fr] min-[901px]:gap-x-3 min-[901px]:gap-y-[0.45rem] min-[901px]:items-center mb-[0.35rem]">
             <label className={CLS_LABEL} htmlFor="hybrid-act">
               Activity (optional)
             </label>

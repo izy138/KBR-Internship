@@ -7,6 +7,7 @@ import {
   CLS_DASHBOARD_PANEL_SHELL,
   CLS_RECHARTS_FOCUS_RESET,
   RECHARTS_TOOLTIP_CONTENT_STYLE,
+  RECHARTS_TOOLTIP_ESCAPE_VIEWBOX,
   RECHARTS_TOOLTIP_WRAPPER_STYLE,
 } from "../../utils/chartStyles";
 import {
@@ -437,6 +438,7 @@ export default function BarChartPanel({
         content={renderTooltip}
         contentStyle={RECHARTS_TOOLTIP_CONTENT_STYLE}
         wrapperStyle={RECHARTS_TOOLTIP_WRAPPER_STYLE}
+        allowEscapeViewBox={RECHARTS_TOOLTIP_ESCAPE_VIEWBOX}
         cursor={tooltipCursor}
       />
       <Bar
@@ -481,6 +483,7 @@ export default function BarChartPanel({
         content={renderTooltip}
         contentStyle={RECHARTS_TOOLTIP_CONTENT_STYLE}
         wrapperStyle={RECHARTS_TOOLTIP_WRAPPER_STYLE}
+        allowEscapeViewBox={RECHARTS_TOOLTIP_ESCAPE_VIEWBOX}
         cursor={tooltipCursor}
       />
       <Bar

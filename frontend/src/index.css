@@ -49,7 +49,9 @@
   }
 }
 
-html {
-  /* 90% scale — preferred visual density; 100% makes elements too large */
-  zoom: 0.9;
+@media (min-width: 901px) {
+  html {
+    /* 90% scale — preferred visual density on desktop; 100% on mobile for touch targets */
+    zoom: 0.9;
+  }
 }

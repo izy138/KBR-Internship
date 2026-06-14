@@ -27,6 +27,8 @@ type SearchBarProps = {
   showSemanticToggle?: boolean;
   /** Extra controls on the toolbar row (e.g. mobile Filters button). */
   toolbarEnd?: ReactNode;
+  /** Trailing control aligned to the end of the toolbar row (e.g. mobile help ?). */
+  toolbarTrailing?: ReactNode;
 };
 
 const SEARCH_MODE_TOGGLE_BTN_BASE =
@@ -96,6 +98,7 @@ const SearchBar: FC<SearchBarProps> = ({
   onSemanticModeChange,
   showSemanticToggle = false,
   toolbarEnd,
+  toolbarTrailing,
 }) => {
   const [query, setQuery] = useState(initialQuery);
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -280,22 +283,25 @@ const SearchBar: FC<SearchBarProps> = ({
   );
 
   const modeToggleControls =
-    semanticControl != null || advancedControl != null ? (
-      <div className="flex shrink-0 items-center gap-2">
-        {semanticControl}
-        {advancedControl}
+    semanticControl != null || advancedControl != null || toolbarEnd != null || toolbarTrailing != null ? (
+      <div className="flex w-full min-[901px]:w-auto shrink-0 items-center gap-2 max-[900px]:justify-between">
+        <div className="flex flex-wrap items-center gap-2 min-w-0">
+          {semanticControl}
+          {advancedControl}
+          {toolbarEnd}
+        </div>
+        {toolbarTrailing}
       </div>
     ) : null;
 
   return (
     <>
       {useExpandedLayout ? (
-        <div className="flex w-full min-w-0 items-center justify-start gap-2">
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-start gap-2 max-[900px]:flex-col max-[900px]:items-stretch">
           <div className="min-w-0 w-full max-w-[32rem] flex-1 min-[901px]:flex-none">
             {searchForm}
           </div>
           {modeToggleControls}
-          {toolbarEnd}
         </div>
       ) : (
         searchForm

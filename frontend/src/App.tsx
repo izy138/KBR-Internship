@@ -760,21 +760,24 @@ export default function App() {
 
   return (
     <div className="grid grid-rows-[auto_minmax(0,1fr)] h-full overflow-hidden font-sans">
-      <header className="grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[50px] bg-surface border-b border-border gap-4 max-[900px]:h-[60px] max-[900px]:px-4">
+      <header className="bg-surface border-b border-border max-[900px]:grid max-[900px]:grid-cols-[1fr_auto] max-[900px]:grid-rows-[auto_auto] max-[900px]:items-center max-[900px]:gap-x-2 max-[900px]:gap-y-1.5 max-[900px]:px-3 max-[900px]:py-2 min-[901px]:grid min-[901px]:grid-cols-[1fr_auto_1fr] min-[901px]:items-center min-[901px]:px-6 min-[901px]:h-[50px] min-[901px]:gap-4">
         <button
           type="button"
-          className="flex items-center gap-[0.4rem] font-semibold text-[15px] text-text-primary bg-transparent border-none cursor-pointer tracking-[0.01em] shrink-0 justify-self-start hover:text-accent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+          className="max-[900px]:col-start-1 max-[900px]:row-start-1 flex items-center gap-[0.4rem] font-semibold text-[14px] min-[901px]:text-[15px] text-text-primary bg-transparent border-none cursor-pointer tracking-[0.01em] shrink-0 justify-self-start hover:text-accent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
           onClick={handleNavigateToDashboard}
           aria-label="Return to dashboard"
         >
-          <div className="w-[9px] h-[9px] rounded-full bg-accent" />
-          NIH Project Search
+          <div className="w-[9px] h-[9px] rounded-full bg-accent shrink-0" />
+          <span className="truncate">NIH Project Search</span>
         </button>
-        <nav className="flex items-center justify-center gap-1" aria-label="Main navigation">
+        <nav
+          className="max-[900px]:col-span-2 max-[900px]:row-start-2 min-[901px]:col-start-2 min-[901px]:row-start-1 flex items-center justify-center gap-0.5 min-[901px]:gap-1 overflow-x-auto"
+          aria-label="Main navigation"
+        >
           <button
             type="button"
             className={
-              "px-3 py-[0.35rem] rounded-sm border-none font-sans text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
+              "shrink-0 px-2 py-1 min-[901px]:px-3 min-[901px]:py-[0.35rem] rounded-sm border-none font-sans text-[12px] min-[901px]:text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
               (view === "dashboard" && !isSemanticRoute
                 ? " text-accent-text bg-accent-light"
                 : " bg-transparent text-text-muted")
@@ -786,7 +789,7 @@ export default function App() {
           <button
             type="button"
             className={
-              "px-3 py-[0.35rem] rounded-sm border-none font-sans text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
+              "shrink-0 px-2 py-1 min-[901px]:px-3 min-[901px]:py-[0.35rem] rounded-sm border-none font-sans text-[12px] min-[901px]:text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
               ((isSearchRoute
                 || selectedProjectId
                 || selectedInvestigatorName
@@ -802,20 +805,21 @@ export default function App() {
           <button
             type="button"
             className={
-              "px-3 py-[0.35rem] rounded-sm border-none font-sans text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
+              "shrink-0 px-2 py-1 min-[901px]:px-3 min-[901px]:py-[0.35rem] rounded-sm border-none font-sans text-[12px] min-[901px]:text-[13px] font-medium cursor-pointer transition-[color,background] duration-150 hover:text-text-primary hover:bg-surface-hover" +
               (isSemanticRoute
                 ? " text-accent-text bg-accent-light"
                 : " bg-transparent text-text-muted")
             }
             onClick={() => navigate("/semantic")}
           >
-            Hybrid Search
+            <span className="min-[480px]:hidden">Hybrid</span>
+            <span className="hidden min-[480px]:inline">Hybrid Search</span>
           </button>
         </nav>
 
-        <div className="flex items-center justify-end gap-3 max-[900px]:gap-2">
+        <div className="max-[900px]:col-start-2 max-[900px]:row-start-1 min-[901px]:col-start-3 min-[901px]:row-start-1 flex items-center justify-end gap-2 min-[901px]:gap-3 min-[901px]:justify-self-end">
           <button
-            className="flex items-center gap-[0.4rem] px-[0.65rem] py-[0.3rem] rounded-sm bg-surface-hover border border-border text-text-secondary font-sans text-[12px] font-medium cursor-pointer transition-[color,border-color,background] duration-150 hover:border-border-strong hover:text-text-primary hover:bg-surface max-[900px]:hidden"
+            className="hidden min-[901px]:flex items-center gap-[0.4rem] px-[0.65rem] py-[0.3rem] rounded-sm bg-surface-hover border border-border text-text-secondary font-sans text-[12px] font-medium cursor-pointer transition-[color,border-color,background] duration-150 hover:border-border-strong hover:text-text-primary hover:bg-surface"
             type="button"
             onClick={handleThemeToggle}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
@@ -825,17 +829,27 @@ export default function App() {
               {theme === "light" ? "🌙" : "☀️"}
             </span>
           </button>
+          <button
+            className="flex min-[901px]:hidden items-center justify-center size-8 rounded-sm bg-surface-hover border border-border text-text-secondary cursor-pointer transition-[color,border-color,background] duration-150 hover:border-border-strong hover:text-text-primary hover:bg-surface"
+            type="button"
+            onClick={handleThemeToggle}
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          >
+            <span className="text-base leading-none" aria-hidden="true">
+              {theme === "light" ? "🌙" : "☀️"}
+            </span>
+          </button>
 
-          <div className="flex items-center gap-2 max-[900px]:gap-1" aria-label="Partner logos">
+          <div className="flex items-center gap-1.5 min-[901px]:gap-2" aria-label="Partner logos">
             <img
               src="/Images/KBR_logo.svg"
               alt="KBR logo"
-              className="object-contain h-[28px] max-[900px]:h-5"
+              className="object-contain h-5 min-[901px]:h-[28px]"
             />
             <img
               src="/Images/FIU_logo.svg.png"
               alt="FIU logo"
-              className="object-contain h-[20px] max-[900px]:h-6 mt-2"
+              className="object-contain h-5 min-[901px]:h-[20px] min-[901px]:mt-2"
             />
           </div>
         </div>
@@ -1005,70 +1019,82 @@ export default function App() {
                   }
                 />
 
-                <div className="flex items-center justify-between pt-2 pl-1 gap-4 max-[900px]:flex-col max-[900px]:items-start max-[900px]:gap-2">
-                  <div className="text-text-secondary text-sm pt-[0.35rem]">
-                    {loading ? (
-                      <span>Searching…</span>
-                    ) : (
-                      <span>
-                        <strong className="text-text-primary font-medium">{visibleTotal.toLocaleString()}</strong> results
-                        {total > visibleTotal ? ` out of ${total.toLocaleString()}` : ""}
-                        {activeSearchLabel ? ` for "${activeSearchLabel}"` : ""}
-                        {(projectTermFilters.length > 0 || excludeProjectTermFilters.length > 0) && (
-                          <span className="inline-flex flex-wrap items-center gap-[0.3rem] align-middle">
-                            {" — "}
-                            {projectTermFilters.map((term) => (
-                              <span key={`include-${term}`} className="inline-flex items-center gap-[0.2rem] px-[0.5rem] py-[0.2rem] rounded-md border border-accent-text/25 bg-accent-light text-accent-text text-[0.78rem] font-medium dark:border-accent/45">
-                                {term}
-                                <button
-                                  type="button"
-                                  className="bg-transparent border-none text-accent-text cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
-                                  onClick={() =>
-                                    setProjectTermFilters((prev) => prev.filter((t) => t !== term))
-                                  }
-                                  aria-label={`Remove ${term} filter`}
-                                >
-                                  ×
-                                </button>
-                              </span>
-                            ))}
-                            {excludeProjectTermFilters.map((term) => (
-                              <span key={`exclude-${term}`} className="inline-flex items-center px-[0.5rem] py-[0.2rem] rounded-md border border-red-200/90 bg-red-50 text-red-700 text-[0.78rem] font-medium dark:border-red-900/50 dark:bg-red-950/45 dark:text-red-300">
-                                NOT {term}
-                                <button
-                                  type="button"
-                                  className="bg-transparent border-none text-red-700 dark:text-red-300 cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
-                                  onClick={() =>
-                                    setExcludeProjectTermFilters((prev) => prev.filter((t) => t !== term))
-                                  }
-                                  aria-label={`Remove NOT ${term} filter`}
-                                >
-                                  ×
-                                </button>
-                              </span>
-                            ))}
-                            <button
-                              type="button"
-                              className="bg-transparent border-none text-accent-text cursor-pointer text-[0.78rem] underline px-[0.25rem] py-[0.15rem]"
-                              onClick={handleClearFilters}
-                            >
-                              Clear all
-                            </button>
+                <div className="pt-2 pl-1">
+                  <div className="flex items-center gap-2 max-[900px]:gap-1.5 min-[901px]:justify-between min-[901px]:gap-4">
+                    <div className="shrink-0 text-text-secondary text-sm max-[900px]:text-[11px] max-[900px]:leading-none min-[901px]:pt-[0.35rem]">
+                      {loading ? (
+                        <span>Searching…</span>
+                      ) : (
+                        <>
+                          <span className="min-[901px]:hidden whitespace-nowrap">
+                            <strong className="text-text-primary font-medium">
+                              {visibleTotal.toLocaleString()}
+                            </strong>{" "}
+                            results
                           </span>
-                        )}
-                        {currentPage > 1 ? ` — page ${currentPage} of ${totalPages}` : ""}
-                      </span>
-                    )}
-                  </div>
+                          <span className="hidden min-[901px]:inline">
+                            <strong className="text-text-primary font-medium">
+                              {visibleTotal.toLocaleString()}
+                            </strong>{" "}
+                            results
+                            {total > visibleTotal ? ` out of ${total.toLocaleString()}` : ""}
+                            {activeSearchLabel ? ` for "${activeSearchLabel}"` : ""}
+                            {(projectTermFilters.length > 0 || excludeProjectTermFilters.length > 0) && (
+                              <span className="inline-flex flex-wrap items-center gap-[0.3rem] align-middle">
+                                {" — "}
+                                {projectTermFilters.map((term) => (
+                                  <span key={`include-${term}`} className="inline-flex items-center gap-[0.2rem] px-[0.5rem] py-[0.2rem] rounded-md border border-accent-text/25 bg-accent-light text-accent-text text-[0.78rem] font-medium dark:border-accent/45">
+                                    {term}
+                                    <button
+                                      type="button"
+                                      className="bg-transparent border-none text-accent-text cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
+                                      onClick={() =>
+                                        setProjectTermFilters((prev) => prev.filter((t) => t !== term))
+                                      }
+                                      aria-label={`Remove ${term} filter`}
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                                {excludeProjectTermFilters.map((term) => (
+                                  <span key={`exclude-${term}`} className="inline-flex items-center px-[0.5rem] py-[0.2rem] rounded-md border border-red-200/90 bg-red-50 text-red-700 text-[0.78rem] font-medium dark:border-red-900/50 dark:bg-red-950/45 dark:text-red-300">
+                                    NOT {term}
+                                    <button
+                                      type="button"
+                                      className="bg-transparent border-none text-red-700 dark:text-red-300 cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
+                                      onClick={() =>
+                                        setExcludeProjectTermFilters((prev) => prev.filter((t) => t !== term))
+                                      }
+                                      aria-label={`Remove NOT ${term} filter`}
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                                <button
+                                  type="button"
+                                  className="bg-transparent border-none text-accent-text cursor-pointer text-[0.78rem] underline px-[0.25rem] py-[0.15rem]"
+                                  onClick={handleClearFilters}
+                                >
+                                  Clear all
+                                </button>
+                              </span>
+                            )}
+                            {currentPage > 1 ? ` — page ${currentPage} of ${totalPages}` : ""}
+                          </span>
+                        </>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-4 pb-[0.15rem] max-[900px]:w-full max-[900px]:justify-between max-[900px]:flex-wrap">
-                    <div className="w-full min-w-0">
+                    <div className="flex min-w-0 flex-1 items-center gap-2 pb-[0.15rem] max-[900px]:gap-1.5 min-[901px]:w-auto min-[901px]:shrink-0 min-[901px]:flex-none min-[901px]:gap-4">
                       <button
                         type="button"
                         className={cn(
-                          "box-border w-full min-h-[2rem] rounded-sm border-2 border-border-input bg-bg px-[1rem] py-[0.5rem] font-sans text-[12px] leading-[1.35] text-text-primary outline-none transition-[border-color] duration-150",
+                          "box-border min-h-[2rem] shrink-0 rounded-sm border-2 border-border-input bg-bg px-[1rem] py-[0.5rem] font-sans text-[12px] leading-[1.35] text-text-primary outline-none transition-[border-color] duration-150",
                           "inline-flex items-center justify-center gap-[0.35rem] cursor-pointer hover:border-border-strong focus:border-accent",
                           "disabled:cursor-not-allowed disabled:opacity-50",
+                          "max-[900px]:px-2.5 max-[900px]:text-[11px]",
                         )}
                         onClick={() => void handleDownloadCsv()}
                         disabled={loading || exportingCsv || visibleTotal === 0}
@@ -1084,28 +1110,88 @@ export default function App() {
                         )}
                         {exportingCsv ? "Preparing CSV…" : "Download CSV"}
                       </button>
-                    </div>
-                    <div className="min-w-[19.5rem] w-full flex items-center gap-3">
-                      <FilterSelect
-                        compact
-                        includeEmptyOption={false}
-                        value={sortOption}
-                        onChange={handleSortOptionChange}
-                        options={SORT_SELECT_OPTIONS}
-                        placeholder="Sort"
-                        ariaLabel="Sort results"
-                      />
-                      <FilterSelect
-                        compact
-                        includeEmptyOption={false}
-                        value={String(resultsPerPage)}
-                        onChange={handlePerPageChange}
-                        options={PER_PAGE_SELECT_OPTIONS}
-                        placeholder="Per page"
-                        ariaLabel="Results per page"
-                      />
+                      <div className="flex min-w-0 flex-1 items-center gap-2 max-[900px]:gap-1.5 min-[901px]:min-w-[19.5rem] min-[901px]:flex-none">
+                        <div className="min-w-0 flex-1">
+                          <FilterSelect
+                            compact
+                            includeEmptyOption={false}
+                            truncateSelectedLabel
+                            value={sortOption}
+                            onChange={handleSortOptionChange}
+                            options={SORT_SELECT_OPTIONS}
+                            placeholder="Sort"
+                            ariaLabel="Sort results"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <FilterSelect
+                            compact
+                            includeEmptyOption={false}
+                            truncateSelectedLabel
+                            value={String(resultsPerPage)}
+                            onChange={handlePerPageChange}
+                            options={PER_PAGE_SELECT_OPTIONS}
+                            placeholder="Per page"
+                            ariaLabel="Results per page"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
+
+                  {!loading &&
+                  (total > visibleTotal
+                    || activeSearchLabel
+                    || currentPage > 1
+                    || projectTermFilters.length > 0
+                    || excludeProjectTermFilters.length > 0) ? (
+                    <div className="min-[901px]:hidden mt-1 text-[11px] leading-snug text-text-secondary">
+                      {total > visibleTotal ? <span>{` out of ${total.toLocaleString()}`}</span> : null}
+                      {activeSearchLabel ? <span>{` for "${activeSearchLabel}"`}</span> : null}
+                      {currentPage > 1 ? <span>{` · page ${currentPage} of ${totalPages}`}</span> : null}
+                      {(projectTermFilters.length > 0 || excludeProjectTermFilters.length > 0) && (
+                        <span className="mt-1 inline-flex flex-wrap items-center gap-[0.3rem]">
+                          {projectTermFilters.map((term) => (
+                            <span key={`mobile-include-${term}`} className="inline-flex items-center gap-[0.2rem] px-[0.5rem] py-[0.2rem] rounded-md border border-accent-text/25 bg-accent-light text-accent-text text-[0.78rem] font-medium dark:border-accent/45">
+                              {term}
+                              <button
+                                type="button"
+                                className="bg-transparent border-none text-accent-text cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
+                                onClick={() =>
+                                  setProjectTermFilters((prev) => prev.filter((t) => t !== term))
+                                }
+                                aria-label={`Remove ${term} filter`}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                          {excludeProjectTermFilters.map((term) => (
+                            <span key={`mobile-exclude-${term}`} className="inline-flex items-center px-[0.5rem] py-[0.2rem] rounded-md border border-red-200/90 bg-red-50 text-red-700 text-[0.78rem] font-medium dark:border-red-900/50 dark:bg-red-950/45 dark:text-red-300">
+                              NOT {term}
+                              <button
+                                type="button"
+                                className="bg-transparent border-none text-red-700 dark:text-red-300 cursor-pointer text-[0.85rem] px-[0.15rem] py-0 leading-none opacity-70 hover:opacity-100"
+                                onClick={() =>
+                                  setExcludeProjectTermFilters((prev) => prev.filter((t) => t !== term))
+                                }
+                                aria-label={`Remove NOT ${term} filter`}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                          <button
+                            type="button"
+                            className="bg-transparent border-none text-accent-text cursor-pointer text-[0.78rem] underline px-[0.25rem] py-[0.15rem]"
+                            onClick={handleClearFilters}
+                          >
+                            Clear all
+                          </button>
+                        </span>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
 
                 {exportCsvError && (

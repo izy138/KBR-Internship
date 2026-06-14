@@ -20,6 +20,7 @@ import {
   CLS_DASHBOARD_PANEL_SHELL,
   CLS_RECHARTS_FOCUS_RESET,
   RECHARTS_TOOLTIP_CONTENT_STYLE,
+  RECHARTS_TOOLTIP_ESCAPE_VIEWBOX,
   RECHARTS_TOOLTIP_WRAPPER_STYLE,
 } from "../../utils/chartStyles";
 
@@ -976,7 +977,7 @@ export default function ActivityFundingPiePanel({
           "min-h-[360px] min-w-0 px-1 pb-1",
           tailListOverlay && "overflow-visible",
           showTailPanel && !tailListOverlay
-            && "grid grid-cols-[minmax(0,1fr)_minmax(11rem,14rem)] gap-3 items-stretch",
+            && "grid gap-3 items-stretch max-[768px]:grid-cols-1 min-[769px]:grid-cols-[minmax(0,1fr)_minmax(11rem,14rem)]",
         )}
       >
         <div
@@ -1056,6 +1057,7 @@ export default function ActivityFundingPiePanel({
                 content={renderTooltip}
                 contentStyle={RECHARTS_TOOLTIP_CONTENT_STYLE}
                 wrapperStyle={{ ...RECHARTS_TOOLTIP_WRAPPER_STYLE, transition: "none" }}
+                allowEscapeViewBox={RECHARTS_TOOLTIP_ESCAPE_VIEWBOX}
                 isAnimationActive={false}
                 animationDuration={0}
               />
